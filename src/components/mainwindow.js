@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useState, useRef } from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import CmdInput from './cmdinput';
@@ -121,34 +120,48 @@ const KeypadCell = ({cmd, longCmd, children, ...props}) => {
 };
 
 const Keypad = props => {
-    const big = useMediaQuery(theme => theme.breakpoints.up('sm'));
+    const {isNavigation} = props
 
-    return !big && <>
-        <tr aria-hidden="true">
-            <td></td>
-            <td></td>
-            <KeypadCell cmd="scan"><i className="fa  fa-fw fa-refresh"></i></KeypadCell>
-            <KeypadCell cmd="n" longCmd="отпер север|откр север"><span>N</span></KeypadCell>
-            <KeypadCell cmd="u" longCmd="отпер вверх|откр вверх"><span>U</span></KeypadCell>
-        </tr>
-        <tr aria-hidden="true">
-            <td></td>
-            <td></td>
-            <KeypadCell cmd="w" longCmd="отпер запад|откр запад"><span>W</span></KeypadCell>
-            <KeypadCell cmd="l"> <i className="fa fa-fw  fa-eye"></i></KeypadCell>
-            <KeypadCell cmd="e" longCmd="отпер восток|откр восток"><span>E</span></KeypadCell>
-        </tr>
-        <tr aria-hidden="true">
-            <td></td>
-            <td></td>
-            <KeypadCell cmd="where"><i className="fa fa-fw fa-map-marker"></i></KeypadCell>
-            <KeypadCell cmd="s" longCmd="отпер юг|откр юг"><span>S</span></KeypadCell>
-            <KeypadCell cmd="d" longCmd="отпер вниз|откр вниз"><span>D</span></KeypadCell>
-        </tr>
-    </>;
+    console.log(typeof isNavigation)
+    console.log(typeof localStorage.getItem("isnavigation"))
+    return isNavigation || localStorage.getItem("isnavigation") === 'true' ? (
+        <>
+            <tr aria-hidden="true">
+                <td></td>
+                <td></td>
+                <td></td>
+                <KeypadCell cmd="scan"><i className="fa  fa-fw fa-refresh"></i></KeypadCell>
+                <KeypadCell cmd="n" longCmd="отпер север|откр север"><span>N</span></KeypadCell>
+                <KeypadCell cmd="u" longCmd="отпер вверх|откр вверх"><span>U</span></KeypadCell>
+            </tr>
+            <tr aria-hidden="true">
+                <td></td>
+                <td></td>
+                <td></td>
+                <KeypadCell cmd="w" longCmd="отпер запад|откр запад"><span>W</span></KeypadCell>
+                <KeypadCell cmd="l"> <i className="fa fa-fw  fa-eye"></i></KeypadCell>
+                <KeypadCell cmd="e" longCmd="отпер восток|откр восток"><span>E</span></KeypadCell>
+            </tr>
+            <tr aria-hidden="true">
+                <td></td>
+                <td></td>
+                <td></td>
+                <KeypadCell cmd="where"><i className="fa fa-fw fa-map-marker"></i></KeypadCell>
+                <KeypadCell cmd="s" longCmd="отпер юг|откр юг"><span>S</span></KeypadCell>
+                <KeypadCell cmd="d" longCmd="отпер вниз|откр вниз"><span>D</span></KeypadCell>
+            </tr>
+        </>
+    ) : '';
 };
 
 const Overlay = ({unread, onScrollToBottom}) => {
+    const [isNavigation, setIsNavigation] = useState(false)
+    const toogleNavigation = () => {
+        console.log(isNavigation+"test")
+        setIsNavigation(!isNavigation)
+        localStorage.setItem("isnavigation", !isNavigation)
+    }
+
     const classes = useStyles();
 
     const button= { display: 'none' };
@@ -157,13 +170,14 @@ const Overlay = ({unread, onScrollToBottom}) => {
         <table id="nav" className={classes.nav}>
             <tbody>
                 <tr>
+                    <OverlayCell id="enable-navigation-button" onClick={toogleNavigation} ariaHidden="true" ariaLabel="навигация"> <i className="fa fa-bars"></i> </OverlayCell>
                     <OverlayCell id="logs-button" ariaLabel="логи" ariaHidden="true"> <i className="fa fa-download"></i> </OverlayCell>
                     <OverlayCell id="settings-button" data-toggle="modal" data-target="#settings-modal" ariaLabel="настройки" ariaHidden="false"> <i className="fa fa-cog"></i> </OverlayCell>
                     <OverlayCell id="map-button" ariaLabel="карта" ariaHidden="true"> <i className="fa fa-map"></i> </OverlayCell>
                     <OverlayCell id="font-plus-button" ariaHidden="true"> <i className="fa fa-plus"></i> </OverlayCell>
                     <OverlayCell id="font-minus-button" ariaHidden="true"> <i className="fa fa-minus"></i> </OverlayCell>
                 </tr>
-                <Keypad />
+                <Keypad isNavigation={isNavigation} />
             </tbody>
         </table>
         { unread > 0 &&
