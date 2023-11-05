@@ -122,8 +122,6 @@ const KeypadCell = ({cmd, longCmd, children, ...props}) => {
 const Keypad = props => {
     const {isNavigation} = props
 
-    console.log(typeof isNavigation)
-    console.log(typeof localStorage.getItem("isnavigation"))
     return isNavigation || localStorage.getItem("isnavigation") === 'true' ? (
         <>
             <tr aria-hidden="true">
